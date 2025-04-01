@@ -1,15 +1,16 @@
 import streamlit as st
-import os
+import pyperclip
+
+# TODO - fix mbtiles/pmtiles output switching
 
 st.set_page_config(
-    page_title="Tippecanoe Command Generator", page_icon="🗺️", layout="wide"
+    page_title="Tippecanoe Command Generator", page_icon="🛶", layout="wide"
 )
 
-st.title("🗺️ Tippecanoe Command Generator")
+st.title("🛶 Tippecanoe Command Generator")
 st.markdown(
     """
-This tool helps you generate a command line for Tippecanoe, a tool that builds vector tilesets 
-from GeoJSON, FlatGeobuf, or CSV files. Configure the options below to customize your tileset generation.
+This tool helps generate commands for [Tippecanoe](https://github.com/felt/tippecanoe?tab=readme-ov-file#tippecanoe), a tool that builds vector tilesets from GeoJSON, FlatGeobuf, or CSV files. Use the interface below to choose your settings and copy the command generated at the bottom to run in your terminal. Shout out to Erica Fisher for all their work creating and documenting Tippecanoe!
 """
 )
 
@@ -45,10 +46,16 @@ with tab1:
     col1, col2 = st.columns(2)
 
     with col1:
+        def sanitize_output_filename(name, extension):
+            if name.endswith(".mbtiles") or name.endswith(".pmtiles"):
+                name = name.rsplit(".", 1)[0]  # Remove existing extension
+            return name + extension
+
+        file_extension = ".mbtiles"
         output_file = st.text_input(
             "Output Filename",
-            value="output.mbtiles",
-            help="Name of the output .mbtiles file",
+            value="output" + file_extension,
+            help="Name of the output file",
         )
 
         output_format = st.radio(
@@ -60,10 +67,17 @@ with tab1:
 
         if output_format == "Directory":
             output_dir = st.text_input(
-                "Output Directory",
-                value="output_tiles",
-                help="Directory to output the tiles",
+            "Output Directory",
+            value="output_tiles",
+            help="Directory to output the tiles",
             )
+        elif output_format == "MBTiles":
+            file_extension = ".mbtiles"
+            output_file = sanitize_output_filename(output_file, file_extension)
+        else:
+            file_extension = ".pmtiles"
+            output_file = sanitize_output_filename(output_file, file_extension)
+
         force_overwrite = st.checkbox(
             "Force Overwrite",
             value=True,
@@ -555,7 +569,10 @@ def build_command():
 command = build_command()
 
 st.code(command, language="bash")
-st.button("Copy to Clipboard", help="Copy the command to your clipboard")
+
+if st.button("Copy to Clipboard"):
+    pyperclip.copy(command)
+    st.success("Command copied to clipboard!")
 
 # Add useful examples
 with st.expander("Example Commands"):
