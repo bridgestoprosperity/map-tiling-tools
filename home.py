@@ -1,5 +1,5 @@
 import streamlit as st
-import pyperclip
+from st_copy_to_clipboard import st_copy_to_clipboard
 
 # TODO - fix mbtiles/pmtiles output switching
 
@@ -10,7 +10,7 @@ st.set_page_config(
 st.title("🛶 Tippecanoe Command Generator")
 st.markdown(
     """
-This tool helps generate commands for [Tippecanoe](https://github.com/felt/tippecanoe?tab=readme-ov-file#tippecanoe), a tool that builds vector tilesets from GeoJSON, FlatGeobuf, or CSV files. Use the interface below to choose your settings and copy the command generated at the bottom to run in your terminal. Shout out to Erica Fisher for all their work creating and documenting Tippecanoe!
+This tool helps generate commands for [Tippecanoe](https://github.com/felt/tippecanoe?tab=readme-ov-file#tippecanoe), a tool that builds vector tilesets from GeoJSON, FlatGeobuf, or CSV files. Use the interface below to choose your settings and copy the command generated at the bottom to run in your terminal. Shout out to [Erica Fischer](https://github.com/e-n-f) for all their work creating and documenting Tippecanoe!
 """
 )
 
@@ -569,10 +569,9 @@ def build_command():
 command = build_command()
 
 st.code(command, language="bash")
+# st.button("Copy to clipboard", on_click=lambda: st.write("Copied!"))
 
-if st.button("Copy to Clipboard"):
-    pyperclip.copy(command)
-    st.success("Command copied to clipboard!")
+st_copy_to_clipboard(command, "Copy Command")
 
 # Add useful examples
 with st.expander("Example Commands"):
