@@ -1,2 +1,2 @@
 # map-tiling-tools
- a tool to help generate map tiling settings using tippecanoe
+ An app to help generate map tiling settings using tippecanoe and other open source tools.
